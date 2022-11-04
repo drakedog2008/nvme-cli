@@ -253,38 +253,61 @@ subdir('tests')
 subdir('util')
 subdir('Documentation')
 
-executable(
-  'nvme',
+libnvme_cli = shared_library(
+  'nvme-cli',
   sources,
   dependencies: [ libnvme_dep, libnvme_mi_dep, json_c_dep, libz_dep,
                   libhugetlbfs_dep ],
   link_args: '-ldl',
+  include_directories: [incdir, '.'],
+  install: true,
+)
+
+libnvme_cli_dep = declare_dependency(
+  include_directories: [incdir, '.'],
+  link_with: libnvme_cli,
+)
+
+pkg = import('pkgconfig')
+pkg.generate(libnvme_cli,
+    filebase: 'libnvme-cli',
+    name: 'libnvme-cli',
+    version: meson.project_version(),
+    description: 'NVMe cli util library',
+    url: 'http://github.com/linux-nvme/nvme-cli/',
+)
+
+install_headers('nvme-print.h')
+
+executable(
+  'nvme',
+  link_with: libnvme_cli,
   include_directories: incdir,
   install: true,
   install_dir: sbindir
 )
 
-################################################################################
-install_data('completions/bash-nvme-completion.sh',
-             rename: 'nvme',
-             install_dir: datadir + '/bash-completion/completions')
-install_data('completions/_nvme',
-             install_dir: datadir + '/zsh/site-functions')
+# ################################################################################
+# install_data('completions/bash-nvme-completion.sh',
+#              rename: 'nvme',
+#              install_dir: datadir + '/bash-completion/completions')
+# install_data('completions/_nvme',
+#              install_dir: datadir + '/zsh/site-functions')
 
-foreach file : dracut_files
-  install_data(meson.current_build_dir() + '/' + file,
-               install_dir: dracutrulesdir)
-endforeach
+# foreach file : dracut_files
+#   install_data(meson.current_build_dir() + '/' + file,
+#                install_dir: dracutrulesdir)
+# endforeach
 
-foreach file : systemd_files
-  install_data(meson.current_build_dir() + '/' + file,
-               install_dir: systemddir)
-endforeach
+# foreach file : systemd_files
+#   install_data(meson.current_build_dir() + '/' + file,
+#                install_dir: systemddir)
+# endforeach
 
-foreach file : udev_files
-  install_data(meson.current_build_dir() + '/' + file,
-               install_dir: udevrulesdir)
-endforeach
+# foreach file : udev_files
+#   install_data(meson.current_build_dir() + '/' + file,
+#                install_dir: udevrulesdir)
+# endforeach
 
-install_data(disc,
-             install_dir: join_paths(sysconfdir, 'nvme'))
+# install_data(disc,
+#              install_dir: join_paths(sysconfdir, 'nvme'))

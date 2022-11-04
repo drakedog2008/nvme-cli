@@ -31,6 +31,7 @@
 #include "nvme.h"
 #include "libnvme.h"
 #include "plugin.h"
+#include "nvme-print.h"
 
 #include "util/suffix.h"
 

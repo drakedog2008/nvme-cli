@@ -29,19 +29,7 @@
 #include "plugin.h"
 #include "util/json.h"
 #include "util/argconfig.h"
-
-enum nvme_print_flags {
-	NORMAL	= 0,
-	VERBOSE	= 1 << 0,	/* verbosely decode complex values for humans */
-	JSON	= 1 << 1,	/* display in json format */
-	VS	= 1 << 2,	/* hex dump vendor specific data areas */
-	BINARY	= 1 << 3,	/* binary dump raw bytes */
-};
-
-enum nvme_cli_topo_ranking {
-	NVME_CLI_TOPO_NAMESPACE,
-	NVME_CLI_TOPO_CTRL,
-};
+#include <ccan/list/list.h>
 
 #define SYS_NVME "/sys/class/nvme"
 
@@ -121,6 +109,13 @@ static inline void nvme_strip_spaces(char *s, int l)
 }
 
 /* nvme-print.c */
+typedef struct nvme_effects_log_node
+{
+	enum nvme_csi csi;
+	struct nvme_cmd_effects_log effects;
+	struct list_node node;
+} nvme_effects_log_node_t;
+
 const char *nvme_select_to_string(int sel);
 
 void d(unsigned char *buf, int len, int width, int group);

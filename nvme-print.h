@@ -2,16 +2,22 @@
 #ifndef NVME_PRINT_H
 #define NVME_PRINT_H
 
-#include "nvme.h"
 #include <inttypes.h>
 
-#include <ccan/list/list.h>
+enum nvme_print_flags
+{
+	NORMAL = 0,
+	VERBOSE = 1 << 0, /* verbosely decode complex values for humans */
+	JSON = 1 << 1,	  /* display in json format */
+	VS = 1 << 2,	  /* hex dump vendor specific data areas */
+	BINARY = 1 << 3,  /* binary dump raw bytes */
+};
 
-typedef struct nvme_effects_log_node {
-	enum nvme_csi csi;
-	struct nvme_cmd_effects_log effects;
-	struct list_node node;
-} nvme_effects_log_node_t;
+enum nvme_cli_topo_ranking
+{
+	NVME_CLI_TOPO_NAMESPACE,
+	NVME_CLI_TOPO_CTRL,
+};
 
 void d(unsigned char *buf, int len, int width, int group);
 void d_raw(unsigned char *buf, unsigned len);
